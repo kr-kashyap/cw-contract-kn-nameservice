@@ -1,11 +1,12 @@
 use cosmwasm_std::{
-    entry_point, to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult,
+    entry_point, to_binary, from_binary, Addr, Binary, Coin, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult,
 };
 
 use crate::coin_helpers::assert_sent_sufficient_coin;
 use crate::error::ContractError;
-use crate::msg::{ConfigResponse, ExecuteMsg, InstantiateMsg, QueryMsg, ResolveRecordResponse};
+use crate::msg::{ConfigResponse, ExecuteMsg, InstantiateMsg, QueryMsg, ResolveRecordResponse, ReceiveMsg};
 use crate::state::{Config, NameRecord, CONFIG, NAME_RESOLVER};
+use cw20::{Cw20ReceiveMsg};
 
 const MIN_NAME_LENGTH: u64 = 3;
 const MAX_NAME_LENGTH: u64 = 64;
@@ -33,25 +34,54 @@ pub fn execute(
     info: MessageInfo,
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
+    let owner = info.sender.clone();
     match msg {
-        ExecuteMsg::Register { name } => execute_register(deps, env, info, name),
-        ExecuteMsg::Transfer { name, to } => execute_transfer(deps, env, info, name, to),
+        ExecuteMsg::Register { name , coin} => execute_register(deps, env, info, name, coin, Some(owner)),
+        ExecuteMsg::Transfer { name, to ,coin} => execute_transfer(deps, env, info, name, to, coin, Some(owner)),
+        ExecuteMsg::Receive(msg) => execute_receive(deps, env, info, msg),
     }
 }
+// eyJyZWdpc3RlciI6eyJuYW1lIjoiYWxpY2UiLCJjb2luIjp7ImRlbm9tIjoia3Ita24iLCJhbW91bnQiOiIxMSJ9fX0= 
+pub fn execute_receive(
+    deps: DepsMut,
+    env: Env,
+    info: MessageInfo,
+    wrapper: Cw20ReceiveMsg,
+) -> Result<Response, ContractError> {
+    let owner = info.sender.clone();
+    let msg: ReceiveMsg = from_binary(&wrapper.msg)?;
+    match msg {
+        ReceiveMsg::Register {
+            name ,
+            coin,
+        } => 
+            execute_register(deps, env, info, name, coin, Some(owner)),
+        ReceiveMsg::Transfer { 
+            name, 
+            to ,
+            coin,
+        } => 
+        execute_transfer(deps, env, info, name, to, coin, Some(owner)),
+    }
+}
+
 
 pub fn execute_register(
     deps: DepsMut,
     _env: Env,
     info: MessageInfo,
     name: String,
+    coin: Coin,
+    owner: Option<Addr>
 ) -> Result<Response, ContractError> {
     // we only need to check here - at point of registration
+    let nameOwner = owner.unwrap();
     validate_name(&name)?;
     let config = CONFIG.load(deps.storage)?;
-    assert_sent_sufficient_coin(&info.funds, config.purchase_price)?;
+    assert_sent_sufficient_coin(coin, config.purchase_price)?;
 
     let key = name.as_bytes();
-    let record = NameRecord { owner: info.sender };
+    let record = NameRecord { owner: nameOwner };
 
     if (NAME_RESOLVER.may_load(deps.storage, key)?).is_some() {
         // name is already taken
@@ -70,15 +100,17 @@ pub fn execute_transfer(
     info: MessageInfo,
     name: String,
     to: String,
+    coin: Coin,
+    owner: Option<Addr>
 ) -> Result<Response, ContractError> {
     let config = CONFIG.load(deps.storage)?;
-    assert_sent_sufficient_coin(&info.funds, config.transfer_price)?;
+    assert_sent_sufficient_coin(coin, config.transfer_price)?;
 
     let new_owner = deps.api.addr_validate(&to)?;
     let key = name.as_bytes();
     NAME_RESOLVER.update(deps.storage, key, |record| {
         if let Some(mut record) = record {
-            if info.sender != record.owner {
+            if info.sender != owner.unwrap() {
                 return Err(ContractError::Unauthorized {});
             }
 
