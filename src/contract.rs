@@ -65,23 +65,22 @@ pub fn execute_receive(
     }
 }
 
-
 pub fn execute_register(
     deps: DepsMut,
     _env: Env,
-    info: MessageInfo,
+    _info: MessageInfo,
     name: String,
     coin: Coin,
     owner: Option<Addr>
 ) -> Result<Response, ContractError> {
     // we only need to check here - at point of registration
-    let nameOwner = owner.unwrap();
+    let name_owner = owner.unwrap();
     validate_name(&name)?;
     let config = CONFIG.load(deps.storage)?;
     assert_sent_sufficient_coin(coin, config.purchase_price)?;
 
     let key = name.as_bytes();
-    let record = NameRecord { owner: nameOwner };
+    let record = NameRecord { owner: name_owner };
 
     if (NAME_RESOLVER.may_load(deps.storage, key)?).is_some() {
         // name is already taken

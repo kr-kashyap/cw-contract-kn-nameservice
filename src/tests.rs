@@ -4,7 +4,6 @@ mod test_module {
     use cosmwasm_std::{coin, coins, from_binary, to_binary, Coin, Deps, DepsMut, Uint128};
 
     use crate::contract::{execute, instantiate, query};
-    use crate::error::ContractError;
     use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg, ResolveRecordResponse};
     use crate::state::Config;
 
