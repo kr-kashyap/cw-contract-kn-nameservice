@@ -54,13 +54,13 @@ mod test_module {
         let info = mock_info("alice_key", sent);
         let msg = ExecuteMsg::Register {
             name: "alice".to_string(),
-            coin: Coin { 
-                denom: (String::from("uorb")), 
+            coin: Coin {
+                denom: (String::from("uorb")),
                 amount: (Uint128::from(11u32)),
-            }
+            },
         };
         let orig = to_binary(&msg).unwrap();
-        println!("MSG : {:?}",orig.to_base64());
+        println!("MSG : {:?}", orig.to_base64());
         let _res = execute(deps, mock_env(), info, msg)
             .expect("contract successfully handles Register message");
     }

@@ -11,7 +11,7 @@ pub fn assert_sent_sufficient_coin(
     } else {
         return Err(ContractError::InsufficientFundsSend {});
     }
-    
+
     // if let Some(required_coin) = required {
     //     let required_amount = required_coin.amount.u128();
     //     if required_amount > 0 {

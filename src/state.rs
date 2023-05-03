@@ -1,5 +1,5 @@
 use cosmwasm_schema::cw_serde;
-use cosmwasm_std::{Addr, Coin};
+use cosmwasm_std::Coin;
 use cw_storage_plus::{Item, Map};
 
 #[cw_serde]
@@ -10,7 +10,7 @@ pub struct Config {
 
 #[cw_serde]
 pub struct NameRecord {
-    pub owner: Addr,
+    pub owner: String,
 }
 
 pub const CONFIG: Item<Config> = Item::new("config");

@@ -1,12 +1,15 @@
 use cosmwasm_std::{
-    entry_point, to_binary, from_binary, Addr, Binary, Coin, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult,
+    entry_point, from_binary, to_binary, Binary, Coin, Deps, DepsMut, Env, MessageInfo, Response,
+    StdError, StdResult,
 };
 
 use crate::coin_helpers::assert_sent_sufficient_coin;
 use crate::error::ContractError;
-use crate::msg::{ConfigResponse, ExecuteMsg, InstantiateMsg, QueryMsg, ResolveRecordResponse, ReceiveMsg};
+use crate::msg::{
+    ConfigResponse, ExecuteMsg, InstantiateMsg, QueryMsg, ReceiveMsg, ResolveRecordResponse,
+};
 use crate::state::{Config, NameRecord, CONFIG, NAME_RESOLVER};
-use cw20::{Cw20ReceiveMsg};
+use cw20::Cw20ReceiveMsg;
 
 const MIN_NAME_LENGTH: u64 = 3;
 const MAX_NAME_LENGTH: u64 = 64;
@@ -34,34 +37,33 @@ pub fn execute(
     info: MessageInfo,
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
-    let owner = info.sender.clone();
+    let owner = info.sender.clone().into_string();
     match msg {
-        ExecuteMsg::Register { name , coin} => execute_register(deps, env, info, name, coin, Some(owner)),
-        ExecuteMsg::Transfer { name, to ,coin} => execute_transfer(deps, env, info, name, to, coin, Some(owner)),
+        ExecuteMsg::Register { name, coin } => {
+            execute_register(deps, env, info, name, coin, Some(owner))
+        }
+        ExecuteMsg::Transfer { name, to, coin } => {
+            execute_transfer(deps, env, info, name, to, coin, Some(owner))
+        }
         ExecuteMsg::Receive(msg) => execute_receive(deps, env, info, msg),
     }
 }
-// eyJyZWdpc3RlciI6eyJuYW1lIjoiYWxpY2UiLCJjb2luIjp7ImRlbm9tIjoia3Ita24iLCJhbW91bnQiOiIxMSJ9fX0= 
+// eyJyZWdpc3RlciI6eyJuYW1lIjoiYWxpY2UiLCJjb2luIjp7ImRlbm9tIjoia3Ita24iLCJhbW91bnQiOiIxMSJ9fX0=
 pub fn execute_receive(
     deps: DepsMut,
     env: Env,
     info: MessageInfo,
     wrapper: Cw20ReceiveMsg,
 ) -> Result<Response, ContractError> {
-    let owner = info.sender.clone();
     let msg: ReceiveMsg = from_binary(&wrapper.msg)?;
+    let owner = wrapper.sender;
     match msg {
-        ReceiveMsg::Register {
-            name ,
-            coin,
-        } => 
-            execute_register(deps, env, info, name, coin, Some(owner)),
-        ReceiveMsg::Transfer { 
-            name, 
-            to ,
-            coin,
-        } => 
-        execute_transfer(deps, env, info, name, to, coin, Some(owner)),
+        ReceiveMsg::Register { name, coin } => {
+            execute_register(deps, env, info, name, coin, Some(owner))
+        }
+        ReceiveMsg::Transfer { name, to, coin } => {
+            execute_transfer(deps, env, info, name, to, coin, Some(owner))
+        }
     }
 }
 
@@ -71,7 +73,7 @@ pub fn execute_register(
     _info: MessageInfo,
     name: String,
     coin: Coin,
-    owner: Option<Addr>
+    owner: Option<String>,
 ) -> Result<Response, ContractError> {
     // we only need to check here - at point of registration
     let name_owner = owner.unwrap();
@@ -100,7 +102,7 @@ pub fn execute_transfer(
     name: String,
     to: String,
     coin: Coin,
-    owner: Option<Addr>
+    owner: Option<String>,
 ) -> Result<Response, ContractError> {
     let config = CONFIG.load(deps.storage)?;
     assert_sent_sufficient_coin(coin, config.transfer_price)?;
@@ -113,7 +115,7 @@ pub fn execute_transfer(
                 return Err(ContractError::Unauthorized {});
             }
 
-            record.owner = new_owner.clone();
+            record.owner = new_owner.clone().into_string();
             Ok(record)
         } else {
             Err(ContractError::NameNotExists { name: name.clone() })
