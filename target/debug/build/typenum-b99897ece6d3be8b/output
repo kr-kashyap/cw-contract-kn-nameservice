@@ -1,0 +1,2 @@
+cargo:rustc-env=TYPENUM_BUILD_CONSTS=/home/kashyap/Downloads/Github/rust-practice/0.Clones/cw-contracts/contracts/nameservice/target/debug/build/typenum-b99897ece6d3be8b/out/consts.rs
+cargo:rustc-env=TYPENUM_BUILD_OP=/home/kashyap/Downloads/Github/rust-practice/0.Clones/cw-contracts/contracts/nameservice/target/debug/build/typenum-b99897ece6d3be8b/out/op.rs

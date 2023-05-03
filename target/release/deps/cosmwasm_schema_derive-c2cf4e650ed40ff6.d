@@ -1,0 +1,8 @@
+/home/kashyap/Downloads/Github/rust-practice/0.Clones/cw-contracts/contracts/nameservice/target/release/deps/libcosmwasm_schema_derive-c2cf4e650ed40ff6.so: /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/cosmwasm-schema-derive-1.1.2/src/lib.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/cosmwasm-schema-derive-1.1.2/src/cw_serde.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/cosmwasm-schema-derive-1.1.2/src/generate_api.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/cosmwasm-schema-derive-1.1.2/src/query_responses.rs
+
+/home/kashyap/Downloads/Github/rust-practice/0.Clones/cw-contracts/contracts/nameservice/target/release/deps/cosmwasm_schema_derive-c2cf4e650ed40ff6.d: /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/cosmwasm-schema-derive-1.1.2/src/lib.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/cosmwasm-schema-derive-1.1.2/src/cw_serde.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/cosmwasm-schema-derive-1.1.2/src/generate_api.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/cosmwasm-schema-derive-1.1.2/src/query_responses.rs
+
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/cosmwasm-schema-derive-1.1.2/src/lib.rs:
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/cosmwasm-schema-derive-1.1.2/src/cw_serde.rs:
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/cosmwasm-schema-derive-1.1.2/src/generate_api.rs:
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/cosmwasm-schema-derive-1.1.2/src/query_responses.rs:

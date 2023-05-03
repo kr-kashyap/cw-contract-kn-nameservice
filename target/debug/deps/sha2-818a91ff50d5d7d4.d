@@ -1,0 +1,13 @@
+/home/kashyap/Downloads/Github/rust-practice/0.Clones/cw-contracts/contracts/nameservice/target/debug/deps/sha2-818a91ff50d5d7d4.rmeta: /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/lib.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/core_api.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/sha256.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/sha512.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/consts.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/sha256/soft.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/sha256/x86.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/sha512/soft.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/sha512/x86.rs
+
+/home/kashyap/Downloads/Github/rust-practice/0.Clones/cw-contracts/contracts/nameservice/target/debug/deps/sha2-818a91ff50d5d7d4.d: /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/lib.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/core_api.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/sha256.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/sha512.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/consts.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/sha256/soft.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/sha256/x86.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/sha512/soft.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/sha512/x86.rs
+
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/lib.rs:
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/core_api.rs:
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/sha256.rs:
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/sha512.rs:
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/consts.rs:
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/sha256/soft.rs:
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/sha256/x86.rs:
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/sha512/soft.rs:
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/sha2-0.10.6/src/sha512/x86.rs:

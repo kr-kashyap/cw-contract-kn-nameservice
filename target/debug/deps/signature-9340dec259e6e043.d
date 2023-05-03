@@ -1,0 +1,12 @@
+/home/kashyap/Downloads/Github/rust-practice/0.Clones/cw-contracts/contracts/nameservice/target/debug/deps/signature-9340dec259e6e043.rmeta: /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/lib.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/hazmat.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/error.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/keypair.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/signature.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/signer.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/verifier.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/../README.md
+
+/home/kashyap/Downloads/Github/rust-practice/0.Clones/cw-contracts/contracts/nameservice/target/debug/deps/signature-9340dec259e6e043.d: /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/lib.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/hazmat.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/error.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/keypair.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/signature.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/signer.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/verifier.rs /home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/../README.md
+
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/lib.rs:
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/hazmat.rs:
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/error.rs:
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/keypair.rs:
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/signature.rs:
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/signer.rs:
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/verifier.rs:
+/home/kashyap/.cargo/registry/src/github.com-1ecc6299db9ec823/signature-1.6.3/src/../README.md:
