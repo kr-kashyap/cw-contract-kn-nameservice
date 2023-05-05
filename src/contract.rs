@@ -1,6 +1,6 @@
 use cosmwasm_std::{
     entry_point, from_binary, to_binary, Binary, Coin, Deps, DepsMut, Env, MessageInfo, Response,
-    StdError, StdResult,
+    StdError, StdResult, Uint128, WasmMsg
 };
 
 use crate::coin_helpers::assert_sent_sufficient_coin;
@@ -9,7 +9,10 @@ use crate::msg::{
     ConfigResponse, ExecuteMsg, InstantiateMsg, QueryMsg, ReceiveMsg, ResolveRecordResponse,
 };
 use crate::state::{Config, NameRecord, CONFIG, NAME_RESOLVER};
-use cw20::Cw20ReceiveMsg;
+use cw20::{Cw20ReceiveMsg, Cw20ExecuteMsg};
+use cw20_base::contract::{
+    execute_send, self,
+};
 
 const MIN_NAME_LENGTH: u64 = 3;
 const MAX_NAME_LENGTH: u64 = 64;
@@ -24,6 +27,7 @@ pub fn instantiate(
     let config = Config {
         purchase_price: msg.purchase_price,
         transfer_price: msg.transfer_price,
+        cw20_contract: msg.cw20_contract,
     };
     CONFIG.save(deps.storage, &config)?;
 
@@ -40,7 +44,7 @@ pub fn execute(
     let owner = info.sender.clone().into_string();
     match msg {
         ExecuteMsg::Register { name, coin } => {
-            execute_register(deps, env, info, name, coin, Some(owner))
+            execute_register(deps, env, info, name, coin, Some(owner), String::new())
         }
         ExecuteMsg::Transfer { name, to, coin } => {
             execute_transfer(deps, env, info, name, to, coin, Some(owner))
@@ -59,27 +63,29 @@ pub fn execute_receive(
     let owner = wrapper.sender;
     match msg {
         ReceiveMsg::Register { name, coin } => {
-            execute_register(deps, env, info, name, coin, Some(owner))
+            execute_register(deps, env, info, name, coin, Some(owner),String::new())
         }
         ReceiveMsg::Transfer { name, to, coin } => {
             execute_transfer(deps, env, info, name, to, coin, Some(owner))
         }
+        ReceiveMsg::Nothing {} => Ok(Response::default())
     }
 }
 
 pub fn execute_register(
     deps: DepsMut,
-    _env: Env,
-    _info: MessageInfo,
+    env: Env,
+    info: MessageInfo,
     name: String,
     coin: Coin,
     owner: Option<String>,
+    contract: String,
 ) -> Result<Response, ContractError> {
     // we only need to check here - at point of registration
     let name_owner = owner.unwrap();
     validate_name(&name)?;
     let config = CONFIG.load(deps.storage)?;
-    assert_sent_sufficient_coin(coin, config.purchase_price)?;
+    assert_sent_sufficient_coin(coin.clone(), config.purchase_price)?;
 
     let key = name.as_bytes();
     let record = NameRecord { owner: name_owner };
@@ -92,7 +98,25 @@ pub fn execute_register(
     // name is available
     NAME_RESOLVER.save(deps.storage, key, &record)?;
 
-    Ok(Response::default())
+    // let _rcpt_addr = deps.api.addr_validate(&contract)?;
+
+    let msg = Cw20ExecuteMsg::TransferFrom{
+        owner:info.clone().sender.into_string(),
+        recipient: env.clone().contract.address.into_string(), 
+        amount: coin.amount, 
+    };
+
+    // let bin_msg = (to_binary(&msg).unwrap()).to_base64();
+    // let err = execute_send(deps, env, info, config.cw20_contract, Uint128::from(1u128), to_binary(&msg).unwrap()).unwrap_err();
+    Ok(Response::new().
+        add_message(
+        WasmMsg::Execute {
+                contract_addr : config.cw20_contract,
+                msg: to_binary(&msg)?,
+                funds: vec![],
+            }
+        )
+    )
 }
 
 pub fn execute_transfer(

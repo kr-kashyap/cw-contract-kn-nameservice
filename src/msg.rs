@@ -7,6 +7,7 @@ use cw20::Cw20ReceiveMsg;
 pub struct InstantiateMsg {
     pub purchase_price: Option<Coin>,
     pub transfer_price: Option<Coin>,
+    pub cw20_contract: String,
 }
 
 #[cw_serde]
@@ -34,6 +35,7 @@ pub enum ReceiveMsg {
         to: String,
         coin: Coin,
     },
+    Nothing {},
 }
 
 #[cw_serde]

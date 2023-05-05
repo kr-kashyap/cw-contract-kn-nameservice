@@ -35,6 +35,7 @@ cw-storage-plus = "0.13.4"
 cosmwasm-schema = "1.1.0"
 thiserror = "1.0.31"
 cw20 = "0.16.0"
+cw20-base = { version = "0.16.0", features = ["library"] }
 
 [dev-dependencies]
 
