@@ -97,14 +97,14 @@ pub fn execute_register(
 
 pub fn execute_transfer(
     deps: DepsMut,
-    _env: Env,
+    env: Env,
     info: MessageInfo,
     name: String,
     to: String,
     coin: Coin,
 ) -> Result<Response, ContractError> {
     let config = CONFIG.load(deps.storage)?;
-    assert_sent_sufficient_coin(coin, config.transfer_price)?;
+    assert_sent_sufficient_coin(coin.clone(), config.transfer_price)?;
 
     let new_owner = deps.api.addr_validate(&to)?;
     let key = name.as_bytes();
@@ -120,7 +120,24 @@ pub fn execute_transfer(
             Err(ContractError::NameNotExists { name: name.clone() })
         }
     })?;
-    Ok(Response::default())
+
+    // Create a CW20Msg of TransferFrom type.
+    let msg = Cw20ExecuteMsg::TransferFrom{
+        owner:info.clone().sender.into_string(),
+        recipient: env.clone().contract.address.into_string(), 
+        amount: coin.amount, 
+    };
+
+    // Add a callback of above message 
+    Ok(Response::new()
+        .add_message(
+        WasmMsg::Execute {
+                contract_addr : config.cw20_contract,
+                msg: to_binary(&msg)?,
+                funds: vec![],
+            }
+        )
+    )
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
