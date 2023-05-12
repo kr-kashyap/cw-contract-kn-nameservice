@@ -1,17 +1,41 @@
 use crate::state::Config;
 use cosmwasm_schema::{cw_serde, QueryResponses};
 use cosmwasm_std::Coin;
+use cw20::Cw20ReceiveMsg;
 
 #[cw_serde]
 pub struct InstantiateMsg {
     pub purchase_price: Option<Coin>,
     pub transfer_price: Option<Coin>,
+    pub cw20_contract: String,
 }
 
 #[cw_serde]
 pub enum ExecuteMsg {
-    Register { name: String },
-    Transfer { name: String, to: String },
+    Register {
+        name: String,
+        coin: Coin,
+    },
+    Transfer {
+        name: String,
+        to: String,
+        coin: Coin,
+    },
+    Receive(Cw20ReceiveMsg),
+}
+
+#[cw_serde]
+pub enum ReceiveMsg {
+    Register {
+        name: String,
+        coin: Coin,
+    },
+    Transfer {
+        name: String,
+        to: String,
+        coin: Coin,
+    },
+    Nothing {},
 }
 
 #[cw_serde]
