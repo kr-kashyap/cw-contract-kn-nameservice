@@ -26,7 +26,4 @@ pub enum ContractError {
 
     #[error("Invalid character(char {c}")]
     InvalidCharacter { c: char },
-
-    #[error("unknown error")]
-    UnknownError {},
 }
