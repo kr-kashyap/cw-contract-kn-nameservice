@@ -1,18 +1,15 @@
 use cosmwasm_std::{
-    entry_point, from_binary, to_binary, Binary, Coin, Deps, DepsMut, Env, MessageInfo, Response,
-    StdError, StdResult, Uint128, WasmMsg
+    entry_point, to_binary, Binary, Coin, Deps, DepsMut, Env, MessageInfo, Response,
+    StdError, StdResult, WasmMsg
 };
 
 use crate::coin_helpers::assert_sent_sufficient_coin;
 use crate::error::ContractError;
 use crate::msg::{
-    ConfigResponse, ExecuteMsg, InstantiateMsg, QueryMsg, ReceiveMsg, ResolveRecordResponse,
+    ConfigResponse, ExecuteMsg, InstantiateMsg, QueryMsg, ResolveRecordResponse,
 };
 use crate::state::{Config, NameRecord, CONFIG, NAME_RESOLVER};
-use cw20::{Cw20ReceiveMsg, Cw20ExecuteMsg};
-use cw20_base::contract::{
-    execute_send, self,
-};
+use cw20::{Cw20ExecuteMsg};
 
 const MIN_NAME_LENGTH: u64 = 3;
 const MAX_NAME_LENGTH: u64 = 64;
@@ -29,6 +26,10 @@ pub fn instantiate(
         transfer_price: msg.transfer_price,
         cw20_contract: msg.cw20_contract,
     };
+
+    // TODO: Add a check for contract address validation.
+    // let _rcpt_addr = deps.api.addr_validate(&config.cw20_contract)?;
+
     CONFIG.save(deps.storage, &config)?;
 
     Ok(Response::default())
@@ -41,34 +42,13 @@ pub fn execute(
     info: MessageInfo,
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
-    let owner = info.sender.clone().into_string();
     match msg {
         ExecuteMsg::Register { name, coin } => {
-            execute_register(deps, env, info, name, coin, Some(owner), String::new())
+            execute_register(deps, env, info, name, coin)
         }
         ExecuteMsg::Transfer { name, to, coin } => {
-            execute_transfer(deps, env, info, name, to, coin, Some(owner))
+            execute_transfer(deps, env, info, name, to, coin)
         }
-        ExecuteMsg::Receive(msg) => execute_receive(deps, env, info, msg),
-    }
-}
-// eyJyZWdpc3RlciI6eyJuYW1lIjoiYWxpY2UiLCJjb2luIjp7ImRlbm9tIjoia3Ita24iLCJhbW91bnQiOiIxMSJ9fX0=
-pub fn execute_receive(
-    deps: DepsMut,
-    env: Env,
-    info: MessageInfo,
-    wrapper: Cw20ReceiveMsg,
-) -> Result<Response, ContractError> {
-    let msg: ReceiveMsg = from_binary(&wrapper.msg)?;
-    let owner = wrapper.sender;
-    match msg {
-        ReceiveMsg::Register { name, coin } => {
-            execute_register(deps, env, info, name, coin, Some(owner),String::new())
-        }
-        ReceiveMsg::Transfer { name, to, coin } => {
-            execute_transfer(deps, env, info, name, to, coin, Some(owner))
-        }
-        ReceiveMsg::Nothing {} => Ok(Response::default())
     }
 }
 
@@ -78,11 +58,9 @@ pub fn execute_register(
     info: MessageInfo,
     name: String,
     coin: Coin,
-    owner: Option<String>,
-    contract: String,
-) -> Result<Response, ContractError> {
+    ) -> Result<Response, ContractError> {
     // we only need to check here - at point of registration
-    let name_owner = owner.unwrap();
+    let name_owner = info.clone().sender.into_string();
     validate_name(&name)?;
     let config = CONFIG.load(deps.storage)?;
     assert_sent_sufficient_coin(coin.clone(), config.purchase_price)?;
@@ -98,18 +76,16 @@ pub fn execute_register(
     // name is available
     NAME_RESOLVER.save(deps.storage, key, &record)?;
 
-    // let _rcpt_addr = deps.api.addr_validate(&contract)?;
-
+    // Create a CW20Msg of TransferFrom type.
     let msg = Cw20ExecuteMsg::TransferFrom{
         owner:info.clone().sender.into_string(),
         recipient: env.clone().contract.address.into_string(), 
         amount: coin.amount, 
     };
 
-    // let bin_msg = (to_binary(&msg).unwrap()).to_base64();
-    // let err = execute_send(deps, env, info, config.cw20_contract, Uint128::from(1u128), to_binary(&msg).unwrap()).unwrap_err();
-    Ok(Response::new().
-        add_message(
+    // Add a callback of above message 
+    Ok(Response::new()
+        .add_message(
         WasmMsg::Execute {
                 contract_addr : config.cw20_contract,
                 msg: to_binary(&msg)?,
@@ -126,7 +102,6 @@ pub fn execute_transfer(
     name: String,
     to: String,
     coin: Coin,
-    owner: Option<String>,
 ) -> Result<Response, ContractError> {
     let config = CONFIG.load(deps.storage)?;
     assert_sent_sufficient_coin(coin, config.transfer_price)?;
@@ -135,7 +110,7 @@ pub fn execute_transfer(
     let key = name.as_bytes();
     NAME_RESOLVER.update(deps.storage, key, |record| {
         if let Some(mut record) = record {
-            if info.sender != owner.unwrap() {
+            if info.sender != record.owner {
                 return Err(ContractError::Unauthorized {});
             }
 
