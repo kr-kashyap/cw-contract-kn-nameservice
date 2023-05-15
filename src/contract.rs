@@ -1,11 +1,15 @@
 use cosmwasm_std::{
-    entry_point, to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult,
+    entry_point, to_binary, Binary, Coin, Deps, DepsMut, Env, MessageInfo, Response,
+    StdError, StdResult, WasmMsg
 };
 
 use crate::coin_helpers::assert_sent_sufficient_coin;
 use crate::error::ContractError;
-use crate::msg::{ConfigResponse, ExecuteMsg, InstantiateMsg, QueryMsg, ResolveRecordResponse};
+use crate::msg::{
+    ConfigResponse, ExecuteMsg, InstantiateMsg, QueryMsg, ResolveRecordResponse,
+};
 use crate::state::{Config, NameRecord, CONFIG, NAME_RESOLVER};
+use cw20::{Cw20ExecuteMsg};
 
 const MIN_NAME_LENGTH: u64 = 3;
 const MAX_NAME_LENGTH: u64 = 64;
@@ -20,7 +24,12 @@ pub fn instantiate(
     let config = Config {
         purchase_price: msg.purchase_price,
         transfer_price: msg.transfer_price,
+        cw20_contract: msg.cw20_contract,
     };
+
+    // TODO: Add a check for contract address validation.
+    // let _rcpt_addr = deps.api.addr_validate(&config.cw20_contract)?;
+
     CONFIG.save(deps.storage, &config)?;
 
     Ok(Response::default())
@@ -34,24 +43,30 @@ pub fn execute(
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     match msg {
-        ExecuteMsg::Register { name } => execute_register(deps, env, info, name),
-        ExecuteMsg::Transfer { name, to } => execute_transfer(deps, env, info, name, to),
+        ExecuteMsg::Register { name, coin } => {
+            execute_register(deps, env, info, name, coin)
+        }
+        ExecuteMsg::Transfer { name, to, coin } => {
+            execute_transfer(deps, env, info, name, to, coin)
+        }
     }
 }
 
 pub fn execute_register(
     deps: DepsMut,
-    _env: Env,
+    env: Env,
     info: MessageInfo,
     name: String,
-) -> Result<Response, ContractError> {
+    coin: Coin,
+    ) -> Result<Response, ContractError> {
     // we only need to check here - at point of registration
+    let name_owner = info.clone().sender.into_string();
     validate_name(&name)?;
     let config = CONFIG.load(deps.storage)?;
-    assert_sent_sufficient_coin(&info.funds, config.purchase_price)?;
+    assert_sent_sufficient_coin(coin.clone(), config.purchase_price)?;
 
     let key = name.as_bytes();
-    let record = NameRecord { owner: info.sender };
+    let record = NameRecord { owner: name_owner };
 
     if (NAME_RESOLVER.may_load(deps.storage, key)?).is_some() {
         // name is already taken
@@ -61,18 +76,35 @@ pub fn execute_register(
     // name is available
     NAME_RESOLVER.save(deps.storage, key, &record)?;
 
-    Ok(Response::default())
+    // Create a CW20Msg of TransferFrom type.
+    let msg = Cw20ExecuteMsg::TransferFrom{
+        owner:info.clone().sender.into_string(),
+        recipient: env.clone().contract.address.into_string(), 
+        amount: coin.amount, 
+    };
+
+    // Add a callback of above message 
+    Ok(Response::new()
+        .add_message(
+        WasmMsg::Execute {
+                contract_addr : config.cw20_contract,
+                msg: to_binary(&msg)?,
+                funds: vec![],
+            }
+        )
+    )
 }
 
 pub fn execute_transfer(
     deps: DepsMut,
-    _env: Env,
+    env: Env,
     info: MessageInfo,
     name: String,
     to: String,
+    coin: Coin,
 ) -> Result<Response, ContractError> {
     let config = CONFIG.load(deps.storage)?;
-    assert_sent_sufficient_coin(&info.funds, config.transfer_price)?;
+    assert_sent_sufficient_coin(coin.clone(), config.transfer_price)?;
 
     let new_owner = deps.api.addr_validate(&to)?;
     let key = name.as_bytes();
@@ -82,13 +114,30 @@ pub fn execute_transfer(
                 return Err(ContractError::Unauthorized {});
             }
 
-            record.owner = new_owner.clone();
+            record.owner = new_owner.clone().into_string();
             Ok(record)
         } else {
             Err(ContractError::NameNotExists { name: name.clone() })
         }
     })?;
-    Ok(Response::default())
+
+    // Create a CW20Msg of TransferFrom type.
+    let msg = Cw20ExecuteMsg::TransferFrom{
+        owner:info.clone().sender.into_string(),
+        recipient: env.clone().contract.address.into_string(), 
+        amount: coin.amount, 
+    };
+
+    // Add a callback of above message 
+    Ok(Response::new()
+        .add_message(
+        WasmMsg::Execute {
+                contract_addr : config.cw20_contract,
+                msg: to_binary(&msg)?,
+                funds: vec![],
+            }
+        )
+    )
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]

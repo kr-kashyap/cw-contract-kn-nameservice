@@ -6,12 +6,20 @@ use cosmwasm_std::Coin;
 pub struct InstantiateMsg {
     pub purchase_price: Option<Coin>,
     pub transfer_price: Option<Coin>,
+    pub cw20_contract: String,
 }
 
 #[cw_serde]
 pub enum ExecuteMsg {
-    Register { name: String },
-    Transfer { name: String, to: String },
+    Register {
+        name: String,
+        coin: Coin,
+    },
+    Transfer {
+        name: String,
+        to: String,
+        coin: Coin,
+    },
 }
 
 #[cw_serde]
