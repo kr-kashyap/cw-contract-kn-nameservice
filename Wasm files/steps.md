@@ -30,11 +30,11 @@
 
 8. Register a name on nameservice contract using CW20 token.
 
-`orbitiumd tx wasm execute orb14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s682k4w '{"send" : { "contract" : "orb1nc5tatafv6eyq7llkr2gv50ff9e22mnf70qgjlv737ktmt4eswrqkj05hg" , "amount" : "11" , "msg" : "eyJyZWdpc3RlciI6eyJuYW1lIjoiYWxpY2UiLCJjb2luIjp7ImRlbm9tIjoia3Ita24iLCJhbW91bnQiOiIxMSJ9fX0=" }}' --from alice --gas-prices 0.02uorb --gas auto --gas-adjustment 1.5 -y`
+`orbitiumd tx wasm execute orb1j08452mqwadp8xu25kn9rleyl2gufgfjnv0sn8dvynynakkjukcq6ucya5 '{"register" : {"name" : "abcd" , "coin" : {"amount" : "10", "denom" : "kr-kn"}}}' --from alice --gas-prices 0.02uorb --gas auto --gas-adjustment 1.5 -y`
 
 9. Fetch owner of the name.
 
-`orbitiumd q wasm contract-state smart orb1nc5tatafv6eyq7llkr2gv50ff9e22mnf70qgjlv737ktmt4eswrqkj05hg '{ "resolve_record" : { "name" : "alice" }}'`
+`orbitiumd q wasm contract-state smart orb1j08452mqwadp8xu25kn9rleyl2gufgfjnv0sn8dvynynakkjukcq6ucya5 '{ "resolve_record" : { "name" : "abcd" }}'`
 
 10. Fetch CW20 balance.
 
